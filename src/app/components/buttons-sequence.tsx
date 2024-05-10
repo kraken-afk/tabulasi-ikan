@@ -1,18 +1,23 @@
 import { B } from "@mobily/ts-belt";
 import clsx from "clsx/lite";
+import type { MouseEventHandler } from "react";
+import { useLocation } from "wouter";
 
 type ButtonsSequenceProps = {
   batch: number;
   total: number;
   displayCount: number;
+  onClick: MouseEventHandler<HTMLButtonElement>;
 };
 
 export function ButtonSequence({
   batch,
   total,
   displayCount,
+  onClick,
 }: ButtonsSequenceProps) {
   const totalBatch = (total - (total % displayCount)) / displayCount + 1;
+  const [_, setLocation] = useLocation();
   const sequence = B.ifElse(
     batch > 3,
     () =>
@@ -42,7 +47,8 @@ export function ButtonSequence({
             "table-controller__button",
           )}
           data-sequence={n}
-          type="button">
+          type="button"
+          onClick={onClick}>
           <span className="table-controller__button__text">{n}</span>
         </button>
       ))}

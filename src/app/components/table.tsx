@@ -10,9 +10,10 @@ import type { ListResponse } from "@/libs/zod/scheme";
 
 import "@/app/components/table.scss";
 import clsx from "clsx";
+import { A } from "@mobily/ts-belt";
 
-const DISPLAY_COUNT = 10;
-const INITIAL_AMOUNT_OF_DATA = 60;
+export const DISPLAY_COUNT = 10;
+export const INITIAL_AMOUNT_OF_DATA = 60;
 
 export function Table() {
   const [{ data, batch, totalFetched }, dispatch] = useSteinPagination();
@@ -21,76 +22,49 @@ export function Table() {
   const end = batch * DISPLAY_COUNT;
   const totalBatch =
     (data.length - (data.length % DISPLAY_COUNT)) / DISPLAY_COUNT + 1;
-  const previousButtonCliclHandler: MouseEventHandler<HTMLButtonElement> =
-    (event) => {
-      const button = event.currentTarget
-      const siblings = button.parentElement?.lastChild as HTMLButtonElement;
-      // If user reached the 60% of data, it will requesr another peice of data
-      if (batch <= 1) {
-        button.classList.add("disabled")
-        button.disabled = true;
-      }
-
-      if (siblings.hasAttribute("disabled") && siblings.classList.contains("disabled")) {
-        siblings.classList.remove("disabled")
-        siblings.disabled = false;
-      }
-
-      dispatch({ type: "previous" });
-    };
-  const nextButtonCliclHandler: MouseEventHandler<HTMLButtonElement> = (event) => {
-    const button = event.currentTarget
-    const siblings = button.parentElement?.firstChild as HTMLButtonElement;
+  const previousButtonCliclHandler: MouseEventHandler<HTMLButtonElement> = (
+    event,
+  ) => {
+    const button = event.currentTarget;
+    const siblings = button.parentElement?.lastChild as HTMLButtonElement;
     // If user reached the 60% of data, it will requesr another peice of data
-    if (batch >= totalBatch) {
-      button.classList.add("disabled")
+    if (batch <= 1) {
+      button.classList.add("disabled");
       button.disabled = true;
     }
 
-    if (siblings.hasAttribute("disabled") && siblings.classList.contains("disabled")) {
-      siblings.classList.remove("disabled")
+    if (
+      siblings.hasAttribute("disabled") &&
+      siblings.classList.contains("disabled")
+    ) {
+      siblings.classList.remove("disabled");
       siblings.disabled = false;
     }
 
-    if ((batch / totalBatch) * 100 > 20) {
-      store
-        .read<ListResponse>(SteinSheet.LIST, {
-          limit: DISPLAY_COUNT * 3,
-          offset: totalFetched,
-        })
-        .then((list) => {
-          dispatch({
-            type: "set",
-            payload: {
-              data: data
-                .concat(listsParser(list))
-                .map((x, i) => ({ ...x, no: i + 1 })),
-              totalFetched: totalFetched + list.length,
-            },
-          });
-        });
+    dispatch({ type: "previous" });
+  };
+  const nextButtonCliclHandler: MouseEventHandler<HTMLButtonElement> = (
+    event,
+  ) => {
+    const button = event.currentTarget;
+    const siblings = button.parentElement?.firstChild as HTMLButtonElement;
+    // If user reached the 60% of data, it will requesr another peice of data
+    if (batch >= totalBatch) {
+      button.classList.add("disabled");
+      button.disabled = true;
+    }
+
+    if (
+      siblings.hasAttribute("disabled") &&
+      siblings.classList.contains("disabled")
+    ) {
+      siblings.classList.remove("disabled");
+      siblings.disabled = false;
     }
     dispatch({ type: "next" });
   };
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
-  useEffect(() => {
-    store
-      .read<ListResponse>(SteinSheet.LIST, {
-        limit: INITIAL_AMOUNT_OF_DATA * batch,
-      })
-      .then((list) =>
-        dispatch({
-          type: "set",
-          payload: {
-            data: listsParser(list).map((x, i) => ({ ...x, no: i + 1 })),
-            totalFetched: totalFetched + list.length,
-          },
-        }),
-      );
-  }, []);
-
-  return data.length === 0 ? (
+  return A.isEmpty(data) ? (
     <p>loading..</p>
   ) : (
     <>
@@ -122,7 +96,10 @@ export function Table() {
       <div className="table-controller">
         <button
           onClick={previousButtonCliclHandler}
-          className={clsx("table-controller__button", batch === 1 && "disabled")}
+          className={clsx(
+            "table-controller__button",
+            batch === 1 && "disabled",
+          )}
           disabled={batch === 1}
           type="button">
           <ChevronLeft size={16} />
@@ -137,6 +114,37 @@ export function Table() {
           batch={batch}
           total={data.length}
           displayCount={DISPLAY_COUNT}
+          onClick={(event) => {
+            const button = event.currentTarget as HTMLButtonElement;
+            const sequence = Number.parseInt(button.dataset.sequence || "", 10);
+
+            if (sequence > totalBatch) {
+              store
+                .read<ListResponse>(SteinSheet.LIST, {
+                  limit: INITIAL_AMOUNT_OF_DATA * batch,
+                })
+                .then((list) => {
+                  // Check if component is still mounted before dispatching
+                  if (button.closest("body")) {
+                    dispatch({
+                      type: "set",
+                      payload: {
+                        data: listsParser(list).map((x, i) => ({
+                          ...x,
+                          no: i + 1,
+                        })),
+                        totalFetched: totalFetched + list.length,
+                      },
+                    });
+                  }
+                })
+                .then(() =>
+                  dispatch({ type: "goto", payload: { batch: sequence } }),
+                );
+            } else {
+              dispatch({ type: "goto", payload: { batch: sequence } });
+            }
+          }}
         />
 
         {batch < totalBatch - 3 && totalBatch > 5 && (
@@ -146,7 +154,10 @@ export function Table() {
         )}
         <button
           onClick={nextButtonCliclHandler}
-          className={clsx("table-controller__button", batch >= totalBatch && "disabled")}
+          className={clsx(
+            "table-controller__button",
+            batch >= totalBatch && "disabled",
+          )}
           disabled={batch >= totalBatch}
           type="button">
           <ChevronRight size={16} />
