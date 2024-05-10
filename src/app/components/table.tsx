@@ -25,7 +25,7 @@ export function Table() {
       dispatch({ type: "previous" });
     };
   const nextButtonCliclHandler: MouseEventHandler<HTMLButtonElement> = () => {
-    // If user has reach the 60% of data, it will requesr another peice of data
+    // If user reached the 60% of data, it will requesr another peice of data
     if ((batch / totalBatch) * 100 > 20) {
       store
         .read<ListResponse>(SteinSheet.LIST, {
@@ -50,7 +50,9 @@ export function Table() {
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     store
-      .read<ListResponse>(SteinSheet.LIST, { limit: INITIAL_AMOUNT_OF_DATA })
+      .read<ListResponse>(SteinSheet.LIST, {
+        limit: INITIAL_AMOUNT_OF_DATA * batch,
+      })
       .then((list) =>
         dispatch({
           type: "set",
