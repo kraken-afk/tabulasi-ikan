@@ -12,9 +12,14 @@
     "prepare": "husky"
   },
   "dependencies": {
-    "million": "^3.0.6",
+    "@mobily/ts-belt": "^3.13.1",
+    "date-fns": "^3.6.0",
+    "normalize.css": "^8.0.1",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "stein-js-client": "^0.0.2",
+    "ts-pattern": "^5.1.1",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.7.3",
