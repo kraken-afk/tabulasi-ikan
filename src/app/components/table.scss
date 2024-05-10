@@ -59,6 +59,12 @@
     &.hightlight {
       @include button-highlight;
     }
+
+    &.disabled {
+      opacity: .7;
+      pointer-events: none;
+      cursor: default;
+    }
   }
 
   &__button:first-child,
