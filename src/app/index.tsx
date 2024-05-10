@@ -1,5 +1,5 @@
 import { useStein } from "@/hooks/use-stein";
-import { Table } from "./componens/table";
+import { Table } from "./components/table";
 import { SteinSheet } from "@/libs/stein/stein-store";
 
 export function App() {

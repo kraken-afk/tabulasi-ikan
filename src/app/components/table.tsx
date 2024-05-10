@@ -1,37 +1,65 @@
 import { useSteinPagination } from "@/hooks/use-stein-pagination";
-import { SteinSheet, store } from "@/libs/stein/stein-store";
-import { type List, parseList } from "@/libs/zod/parser";
-import type { listScheme } from "@/libs/zod/scheme";
-import type { z } from "zod";
-
-import "@/app/componens/table.scss";
-import { type MouseEventHandler, useEffect } from "react";
+import { listsParser } from "@/utils/lists-parser";
 import { intlFormat } from "date-fns";
+
+import { SteinSheet, store } from "@/libs/stein/stein-store";
 import { ChevronLeft, ChevronRight, Ellipsis } from "lucide-react";
 import { ButtonSequence } from "./buttons-sequence";
+import { type MouseEventHandler, useEffect } from "react";
+import type { ListResponse } from "@/libs/zod/scheme";
 
-const DISPLAY_COUNT = 5;
-const INITIAL_AMOUNT_OF_DATA = 50;
+import "@/app/components/table.scss";
+
+const DISPLAY_COUNT = 10;
+const INITIAL_AMOUNT_OF_DATA = 60;
 
 export function Table() {
-  const [{ data, batch }, dispatch] = useSteinPagination();
+  const [{ data, batch, totalFetched }, dispatch] = useSteinPagination();
   const tableHeaders = ["No", "Commodity", "Size", "Price", "Domicile", "Date"];
   const start = batch * DISPLAY_COUNT - DISPLAY_COUNT;
   const end = batch * DISPLAY_COUNT;
-  const previousButtonCliclHandler: MouseEventHandler<HTMLButtonElement> = () => {
-    console.log("previous click");
-    dispatch({ type: "previous" });
-  };
+  const totalBatch =
+    (data.length - (data.length % DISPLAY_COUNT)) / DISPLAY_COUNT + 1;
+  const previousButtonCliclHandler: MouseEventHandler<HTMLButtonElement> =
+    () => {
+      dispatch({ type: "previous" });
+    };
   const nextButtonCliclHandler: MouseEventHandler<HTMLButtonElement> = () => {
-    console.log("next click");
+    // If user has reach the 60% of data, it will requesr another peice of data
+    if ((batch / totalBatch) * 100 > 20) {
+      store
+        .read<ListResponse>(SteinSheet.LIST, {
+          limit: DISPLAY_COUNT * 3,
+          offset: totalFetched,
+        })
+        .then((list) => {
+          dispatch({
+            type: "set",
+            payload: {
+              data: data
+                .concat(listsParser(list))
+                .map((x, i) => ({ ...x, no: i + 1 })),
+              totalFetched: totalFetched + list.length,
+            },
+          });
+        });
+    }
     dispatch({ type: "next" });
   };
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     store
-      .read<z.infer<typeof listScheme>>(SteinSheet.LIST, { limit: INITIAL_AMOUNT_OF_DATA })
-      .then((list) => dispatch({ type: "set", payload: list.filter(hasNonNullValues).map(parseList) as List[] }));
+      .read<ListResponse>(SteinSheet.LIST, { limit: INITIAL_AMOUNT_OF_DATA })
+      .then((list) =>
+        dispatch({
+          type: "set",
+          payload: {
+            data: listsParser(list).map((x, i) => ({ ...x, no: i + 1 })),
+            totalFetched: totalFetched + list.length,
+          },
+        }),
+      );
   }, []);
 
   return data.length === 0 ? (
@@ -64,29 +92,36 @@ export function Table() {
         </tbody>
       </table>
       <div className="table-controller">
-        <button onClick={previousButtonCliclHandler} className="table-controller__button" type="button">
+        <button
+          onClick={previousButtonCliclHandler}
+          className="table-controller__button"
+          type="button">
           <ChevronLeft size={16} />
         </button>
-        {batch > 3 && (
+        {batch > 3 && totalBatch > 5 && (
           <div className="table-controller__button__ellipsis">
             <Ellipsis size={16} />
           </div>
         )}
-        <ButtonSequence batch={batch} total={data.length} displayCount={DISPLAY_COUNT} />
-        {batch < (data.length - (data.length % DISPLAY_COUNT)) / DISPLAY_COUNT + 1 - 3 && (
+
+        <ButtonSequence
+          batch={batch}
+          total={data.length}
+          displayCount={DISPLAY_COUNT}
+        />
+
+        {batch < totalBatch - 3 && totalBatch > 5 && (
           <div className="table-controller__button__ellipsis">
             <Ellipsis size={16} />
           </div>
         )}
-        <button onClick={nextButtonCliclHandler} className="table-controller__button" type="button">
+        <button
+          onClick={nextButtonCliclHandler}
+          className="table-controller__button"
+          type="button">
           <ChevronRight size={16} />
         </button>
       </div>
     </>
   );
-}
-
-// biome-ignore lint/suspicious/noExplicitAny: <explanation>
-function hasNonNullValues(listItem: any): boolean {
-  return Object.values(listItem).every((value) => value !== null && value !== undefined);
 }

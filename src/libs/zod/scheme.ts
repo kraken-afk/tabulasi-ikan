@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+export type ListResponse = z.infer<typeof listScheme>;
+
 const uppercaseRegex = /^[A-Z ]+$/;
 export const areaSceme = z.object({
   province: z
