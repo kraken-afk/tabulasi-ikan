@@ -8,7 +8,6 @@ type SteinPaginationAction =
       type: "set";
       payload?: List[];
     };
-
 type SteinPaginationState = {
   data: List[];
   batch: number;

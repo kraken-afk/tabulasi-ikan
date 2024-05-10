@@ -1,27 +1,68 @@
+@mixin button-highlight {
+  border-color: blue;
+  color: blue;
+}
+
 .table {
   margin: 4rem auto;
 
-  td {
-    text-transform: capitalize;
-  }
-
-  td,
-  th {
+  &__cell {
     padding: 1rem;
     border-bottom: 1px solid rgba(0, 0, 0, .1);
     text-align: start;
     font-size: .9em;
+    text-transform: capitalize;
   }
 
-  .th {
-    color: #71717a
+  &__head {
+    .table__cell {
+      color: #71717a
+    }
   }
 }
 
-.controller {
+.table-controller {
   display: flex;
-  gap: 2rem;
-  padding: 1rem;
+  gap: .6rem;
   margin-inline: auto;
   width: max-content;
+
+  &__button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: .3rem .6rem;
+    min-width: 35px;
+    cursor: pointer;
+    transition: all 100ms ease-in;
+
+    border-radius: 4px;
+    border: 1px solid;
+    border-color: rgb(229 231 235);
+    background-color: #fff;
+
+    &__text {
+      display: inline-block;
+      margin-bottom: -2px;
+    }
+
+    &__ellipsis {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    &:hover {
+      background: rgb(229 231 235);
+    }
+
+    &.hightlight {
+      @include button-highlight;
+    }
+  }
+
+  &__button:first-child,
+  &__button:last-child {
+    border: none;
+  }
 }
