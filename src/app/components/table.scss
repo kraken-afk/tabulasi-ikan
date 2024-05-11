@@ -15,9 +15,7 @@
   }
 
   &__head {
-    .table__cell {
-      color: #71717a
-    }
+    padding: none;
   }
 }
 
@@ -70,5 +68,27 @@
   &__button:first-child,
   &__button:last-child {
     border: none;
+  }
+}
+
+.sort-controller {
+  display: flex;
+  align-items: center;
+
+  gap: 1.5rem;
+
+  &__button {
+    display: block;
+    background-color: white;
+    padding: 4px 8px;
+    border-radius: 6px;
+    border: 1px solid gray;
+    transition: 100ms;
+    cursor: pointer;
+    font-size: .9em;
+
+    &:hover {
+      background-color: rgb(229 231 235)
+    }
   }
 }

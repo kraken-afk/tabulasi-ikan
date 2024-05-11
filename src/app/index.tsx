@@ -7,10 +7,10 @@ export function App() {
   // useStein(SteinSheet.LIST, "read");
 
   return (
-    <>
+    <div className="container">
       <Switch>
         <Route path="/" component={Table} />
       </Switch>
-    </>
+    </div>
   );
 }

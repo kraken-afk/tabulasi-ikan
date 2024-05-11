@@ -5,19 +5,19 @@ import { intlFormat } from "date-fns";
 import { SteinSheet, store } from "@/libs/stein/stein-store";
 import { ChevronLeft, ChevronRight, Ellipsis } from "lucide-react";
 import { ButtonSequence } from "./buttons-sequence";
-import { type MouseEventHandler, useEffect } from "react";
+import type { MouseEventHandler } from "react";
 import type { ListResponse } from "@/libs/zod/scheme";
 
-import "@/app/components/table.scss";
 import clsx from "clsx";
 import { A } from "@mobily/ts-belt";
+
+import "@/app/components/table.scss";
 
 export const DISPLAY_COUNT = 10;
 export const INITIAL_AMOUNT_OF_DATA = 60;
 
 export function Table() {
-  const [{ data, batch, totalFetched }, dispatch] = useSteinPagination();
-  const tableHeaders = ["No", "Commodity", "Size", "Price", "Domicile", "Date"];
+  const [[{ data, batch, totalFetched }, dispatch], [sortCriteria, dispatchSortCriteria]] = useSteinPagination();
   const start = batch * DISPLAY_COUNT - DISPLAY_COUNT;
   const end = batch * DISPLAY_COUNT;
   const totalBatch =
@@ -27,7 +27,6 @@ export function Table() {
   ) => {
     const button = event.currentTarget;
     const siblings = button.parentElement?.lastChild as HTMLButtonElement;
-    // If user reached the 60% of data, it will requesr another peice of data
     if (batch <= 1) {
       button.classList.add("disabled");
       button.disabled = true;
@@ -48,7 +47,6 @@ export function Table() {
   ) => {
     const button = event.currentTarget;
     const siblings = button.parentElement?.firstChild as HTMLButtonElement;
-    // If user reached the 60% of data, it will requesr another peice of data
     if (batch >= totalBatch) {
       button.classList.add("disabled");
       button.disabled = true;
@@ -64,18 +62,25 @@ export function Table() {
     dispatch({ type: "next" });
   };
 
+
   return A.isEmpty(data) ? (
     <p>loading..</p>
   ) : (
     <>
+      <div className="sort-controller">
+        <h3>Sorting: </h3>
+        <button onClick={() => dispatchSortCriteria({ type: "size", category: sortCriteria.size === "asc" ? "desc" : "asc" })} type="button" className="sort-controller__button">Size | {sortCriteria.size}</button>
+        <button onClick={() => dispatchSortCriteria({ type: "price", category: sortCriteria.price === "asc" ? "desc" : "asc" })} type="button" className="sort-controller__button">Price | {sortCriteria.price}</button>
+      </div>
       <table className="table">
         <thead className="table__head">
           <tr className="table__row">
-            {tableHeaders.map((e) => (
-              <th className="table__cell" key={e}>
-                {e}
-              </th>
-            ))}
+            <th className="table__cell">No</th>
+            <th className="table__cell">Commodity</th>
+            <th className="table__cell">Size</th>
+            <th className="table__cell">Price</th>
+            <th className="table__cell">Domicile</th>
+            <th className="table__cell">Date</th>
           </tr>
         </thead>
         <tbody className="table__body">

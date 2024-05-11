@@ -1,7 +1,6 @@
 import { B } from "@mobily/ts-belt";
 import clsx from "clsx/lite";
 import type { MouseEventHandler } from "react";
-import { useLocation } from "wouter";
 
 type ButtonsSequenceProps = {
   batch: number;
@@ -17,7 +16,6 @@ export function ButtonSequence({
   onClick,
 }: ButtonsSequenceProps) {
   const totalBatch = (total - (total % displayCount)) / displayCount + 1;
-  const [_, setLocation] = useLocation();
   const sequence = B.ifElse(
     batch > 3,
     () =>

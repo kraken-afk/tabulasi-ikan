@@ -13,3 +13,10 @@
   --inter: "Inter", sans-serif;
   font-family: var(--inter);
 }
+
+
+.container {
+  margin-block: 4rem;
+  margin-inline: auto;
+  max-width: 768px;
+}
