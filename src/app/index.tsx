@@ -1,15 +1,13 @@
-import { useStein } from "@/hooks/use-stein";
-import { Table } from "./components/table";
-import { SteinSheet } from "@/libs/stein/stein-store";
+import { Dashboard } from "./dashboard/page";
 import { Route, Switch } from "wouter";
+import { Form } from "./form/page";
 
 export function App() {
-  // useStein(SteinSheet.LIST, "read");
-
   return (
     <div className="container">
       <Switch>
-        <Route path="/" component={Table} />
+        <Route path="/" component={Dashboard} />
+        <Route path="form" component={Form} />
       </Switch>
     </div>
   );

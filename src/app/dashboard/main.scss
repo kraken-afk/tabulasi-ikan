@@ -1,0 +1,250 @@
+@mixin button-highlight {
+  border-color: teal;
+  color: teal;
+}
+
+.table-container {
+  width: 100%;
+  overflow: hidden;
+
+  @media screen and (max-width: 545px) {
+    overflow-x: auto;
+  }
+}
+
+.table {
+  margin-inline: auto;
+  width: max-content;
+
+  &__cell {
+    padding: 1rem;
+    border-bottom: 1px solid rgba(0, 0, 0, .1);
+    text-align: start;
+    font-size: .9em;
+  }
+
+  &__head {
+    padding: none;
+  }
+}
+
+.table-controller {
+  display: flex;
+  gap: .6rem;
+  margin-inline: auto;
+  width: max-content;
+  margin-top: 3rem;
+
+  @media screen and (max-width: 545px) {
+    gap: .4rem;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    justify-content: space-evenly;
+    z-index: 10;
+    background-color: #fff;
+    padding: .4rem;
+    padding-bottom: 2rem;
+  }
+
+  &__button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 4px 6px;
+    min-width: 35px;
+    cursor: pointer;
+    transition: background-color 100ms ease-in;
+
+    border-radius: 4px;
+    border: 1px solid;
+    border-color: rgb(229 231 235);
+    background-color: #fff;
+
+    &__text {
+      display: inline-block;
+      margin-bottom: -2px;
+    }
+
+    &__ellipsis {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      @media screen and (max-width: 545px) {
+        display: none;
+      }
+    }
+
+    &:hover {
+      background: rgb(229 231 235);
+    }
+
+    &.hightlight {
+      @include button-highlight;
+    }
+
+    &.disabled {
+      opacity: .7;
+      pointer-events: none;
+      cursor: default;
+    }
+  }
+
+  &__button:first-child,
+  &__button:last-child {
+    border: none;
+  }
+}
+
+.controller-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-block: 1rem;
+}
+
+.sort-controller {
+  display: flex;
+  align-items: center;
+  justify-content: end;
+
+  gap: 1.5rem;
+
+  &__button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    background-color: white;
+    font-size: 1rem;
+    padding: 4px 8px;
+    border-radius: 6px;
+    border: 1px solid gray;
+    transition: 100ms;
+    cursor: pointer;
+
+    &:hover {
+      background-color: rgb(229 231 235)
+    }
+  }
+}
+
+.date-controller {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  fill: rgb(229 231 235);
+
+  @media screen and (max-width: 545px) {
+    flex-direction: column;
+
+    & input {
+      width: 100%;
+    }
+  }
+
+  &__input {
+    display: flex;
+    align-items: center;
+    gap: .4rem;
+
+    @media screen and (max-width: 545px) {
+      width: 100%;
+    }
+
+    & input {
+      font-size: 1rem;
+      padding: 4px 8px;
+      border-radius: 6px;
+    }
+  }
+}
+
+.domicile-controller {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+
+
+  @media screen and (max-width: 545px) {
+    flex-direction: column;
+  }
+
+  &__input {
+    display: flex;
+    align-items: center;
+    gap: .3rem;
+
+    @media screen and (max-width: 545px) {
+      width: 100%;
+    }
+
+
+    & select {
+      width: 100%;
+      font-size: 1rem;
+      width: 160px;
+      padding: 4px 8px;
+      border-radius: 6px;
+
+      @media screen and (max-width: 545px) {
+        width: 100%;
+      }
+    }
+  }
+}
+
+.search-controller {
+  margin-block: 3rem;
+}
+
+.anchor-container {
+  display: flex;
+  align-items: center;
+  margin-block: 3rem;
+  justify-content: center;
+}
+
+.anchor {
+  outline: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #40B3A2;
+  min-width: 200px;
+  border: 0;
+  border-radius: 4px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, .1);
+  padding: 8px 10px;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  overflow: hidden;
+  cursor: pointer;
+
+  &:focus {
+    outline: 2px solid black;
+  }
+}
+
+.anchor:hover {
+  opacity: .95;
+}
+
+.anchor .animation {
+  border-radius: 100%;
+  animation: ripple 0.6s linear infinite;
+}
+
+@keyframes ripple {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.1), 0 0 0 20px rgba(255, 255, 255, 0.1), 0 0 0 40px rgba(255, 255, 255, 0.1), 0 0 0 60px rgba(255, 255, 255, 0.1);
+  }
+
+  100% {
+    box-shadow: 0 0 0 20px rgba(255, 255, 255, 0.1), 0 0 0 40px rgba(255, 255, 255, 0.1), 0 0 0 60px rgba(255, 255, 255, 0.1), 0 0 0 80px rgba(255, 255, 255, 0);
+  }
+}

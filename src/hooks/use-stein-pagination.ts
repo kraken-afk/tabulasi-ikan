@@ -1,10 +1,4 @@
-import {
-  useState,
-  useEffect,
-  useLayoutEffect,
-  useReducer,
-  useSyncExternalStore,
-} from "react";
+import { useState, useEffect, useLayoutEffect, useReducer } from "react";
 import { match } from "ts-pattern";
 import { useLocation } from "wouter";
 import { A } from "@mobily/ts-belt";
@@ -29,6 +23,7 @@ type SteinPaginationAction =
         totalFetched: number;
         area: Area[];
         size: Size[];
+        loading: boolean;
       };
     };
 
@@ -37,6 +32,7 @@ type SteinPaginationState = {
   data: List[];
   size: Size[];
   batch: number;
+  loading: boolean;
   totalFetched: number;
 };
 
@@ -98,6 +94,7 @@ export function useSteinPagination() {
     size: [],
     area: [],
     batch: 1,
+    loading: true,
     totalFetched: 0,
   });
   const [dateRange, setDateRange] = useState<{ start: Date; end: Date }>({
@@ -142,6 +139,7 @@ export function useSteinPagination() {
             data: list,
             area,
             size,
+            loading: false,
             totalFetched: state.totalFetched + listResponse.length,
           },
         });
