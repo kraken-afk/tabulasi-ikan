@@ -1,4 +1,10 @@
-import { useState, useEffect, useLayoutEffect, useReducer } from "react";
+import {
+  useState,
+  useEffect,
+  useLayoutEffect,
+  useReducer,
+  useSyncExternalStore,
+} from "react";
 import { match } from "ts-pattern";
 import { useLocation } from "wouter";
 import { A } from "@mobily/ts-belt";
@@ -101,6 +107,7 @@ export function useSteinPagination() {
   const [size, setSize] = useState(0);
   const [city, setCity] = useState("");
   const [province, setProvince] = useState("");
+  const [search, setSearch] = useState("");
 
   useLayoutEffect(() => {
     setLocation(`/?page=${state.batch}`);
@@ -150,14 +157,16 @@ export function useSteinPagination() {
   );
 
   const sortedData = sortList(filteredData, sortCriteria)
-    .map((x, i) => ({ ...x, no: i + 1 }))
     .filter((e) => {
       return (
         (size === 0 || size === e.size) &&
         (city === "" || city === e.city?.toUpperCase()) &&
-        (province === "" || province === e.province?.toUpperCase())
+        (province === "" || province === e.province?.toUpperCase()) &&
+        (search === "" ||
+          e.commodity.toLowerCase().includes(search.toLowerCase()))
       );
-    });
+    })
+    .map((x, i) => ({ ...x, no: i + 1 }));
 
   return [
     { ...state, data: sortedData },
@@ -169,5 +178,6 @@ export function useSteinPagination() {
     setSize,
     setCity,
     setProvince,
+    setSearch,
   ] as const;
 }

@@ -23,6 +23,7 @@ export function Table() {
     setSize,
     setCity,
     setProvince,
+    setSearch,
   ] = useSteinPagination();
 
   const start = batch * DISPLAY_COUNT - DISPLAY_COUNT;
@@ -164,6 +165,13 @@ export function Table() {
               ))}
             </select>
           </div>
+        </div>
+        <div className="search-controller">
+          <input
+            type="text"
+            placeholder="Search Commodity..."
+            onChange={(e) => setSearch(e.currentTarget.value)}
+          />
         </div>
       </div>
       <table className="table">
