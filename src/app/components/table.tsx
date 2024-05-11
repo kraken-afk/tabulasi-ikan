@@ -1,27 +1,28 @@
-// table.tsx
-
 import { ButtonSequence } from "./buttons-sequence";
 import { useSteinPagination } from "@/hooks/use-stein-pagination";
 import { formatDate, intlFormat } from "date-fns";
-import { SteinSheet, store } from "@/libs/stein/stein-store";
 import { ChevronLeft, ChevronRight, Ellipsis } from "lucide-react";
 import type { MouseEventHandler } from "react";
 import { A } from "@mobily/ts-belt";
 import clsx from "clsx";
 
 import "@/app/components/table.scss";
+import { toCapitilize } from "@/utils/to-capitalize";
 
 export const DISPLAY_COUNT = 10;
 export const INITIAL_AMOUNT_OF_DATA = 60;
 
 export function Table() {
   const [
-    { data, batch },
+    { data, batch, size, area },
     dispatch,
     sortCriteria,
     dispatchSortCriteria,
     { start: startDate, end: endDate },
     setDate,
+    setSize,
+    setCity,
+    setProvince,
   ] = useSteinPagination();
 
   const start = batch * DISPLAY_COUNT - DISPLAY_COUNT;
@@ -64,7 +65,6 @@ export function Table() {
     <>
       <div className="controller-container">
         <div className="sort-controller">
-          <h3>Sorting: </h3>
           <button
             onClick={() =>
               dispatchSortCriteria({
@@ -89,7 +89,6 @@ export function Table() {
           </button>
         </div>
         <div className="date-controller">
-          <h3>Pick Date: </h3>
           <div className="date-controller__input">
             <label htmlFor="start">Start</label>
             <input
@@ -116,6 +115,54 @@ export function Table() {
                 setDate((prev) => ({ ...prev, end: new Date(e.target.value) }))
               }
             />
+          </div>
+        </div>
+        <div className="domicile-controller">
+          <div className="domicile-controller__input">
+            <label htmlFor="city">City</label>
+            <select
+              name="city"
+              id="city"
+              onChange={(e) => setCity(e.currentTarget.value)}>
+              <option value="">-</option>
+              {area.map((e) => (
+                <option key={e.city} value={e.city as string}>
+                  {toCapitilize(e.city as string)}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="domicile-controller__input">
+            <label htmlFor="province">Province</label>
+            <select
+              name="province"
+              id="province"
+              onChange={(e) => setProvince(e.currentTarget.value)}>
+              <option value="">-</option>
+              {[...new Set(area.map((e) => e.province))].map((e) => (
+                <option key={e} value={e}>
+                  {toCapitilize(e)}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="domicile-controller__input">
+            <label htmlFor="size">Size</label>
+            <select
+              name="size"
+              id="size"
+              onChange={(e) => setSize(+e.currentTarget.value)}>
+              <option value="0">-</option>
+              {[
+                ...new Set(
+                  size.sort((a, b) => a.size - b.size).map((e) => e.size),
+                ),
+              ].map((e) => (
+                <option key={e} value={e}>
+                  {e.toString()}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
       </div>

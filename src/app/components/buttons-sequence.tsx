@@ -40,9 +40,11 @@ export function ButtonSequence({
       {sequence.map((n) => (
         <button
           key={n}
+          disabled={n > totalBatch}
           className={clsx(
             batch === n && "hightlight",
             "table-controller__button",
+            n > totalBatch && "disabled",
           )}
           data-sequence={n}
           type="button"

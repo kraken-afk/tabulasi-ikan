@@ -3,15 +3,9 @@ import { z } from "zod";
 export type ListResponse = z.infer<typeof listScheme>;
 
 const uppercaseRegex = /^[A-Z ]+$/;
-export const areaSceme = z.object({
-  province: z
-    .string()
-    .nullable()
-    .refine((str) => !str || uppercaseRegex.test(str)),
-  city: z
-    .string()
-    .nullable()
-    .refine((str) => !str || uppercaseRegex.test(str)),
+export const areaScheme = z.object({
+  province: z.string().refine((str) => !str || uppercaseRegex.test(str)),
+  city: z.string().refine((str) => !str || uppercaseRegex.test(str)),
 });
 export const sizeScheme = z.object({
   size: z.number(),

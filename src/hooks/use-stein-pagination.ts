@@ -2,20 +2,34 @@ import { useState, useEffect, useLayoutEffect, useReducer } from "react";
 import { match } from "ts-pattern";
 import { useLocation } from "wouter";
 import { A } from "@mobily/ts-belt";
-import { listsParser } from "@/utils/lists-parser";
+import { areaParser, listsParser, sizeParser } from "@/utils/parser";
 import { store, SteinSheet } from "@/libs/stein/stein-store";
 import { sort } from "fast-sort";
 
-import type { List } from "@/libs/zod/parser";
-import type { ListResponse } from "@/libs/zod/scheme";
+import type { List } from "@/utils/parser";
+import type { ListResponse, areaScheme, sizeScheme } from "@/libs/zod/scheme";
+import type { z } from "zod";
+
+export type Area = z.infer<typeof areaScheme>;
+export type Size = z.infer<typeof sizeScheme>;
 
 type SteinPaginationAction =
   | { type: "next" | "previous" }
   | { type: "goto"; payload: { batch: number } }
-  | { type: "set"; payload: { data: List[]; totalFetched: number } };
+  | {
+      type: "set";
+      payload: {
+        data: List[];
+        totalFetched: number;
+        area: Area[];
+        size: Size[];
+      };
+    };
 
 type SteinPaginationState = {
+  area: Area[];
   data: List[];
+  size: Size[];
   batch: number;
   totalFetched: number;
 };
@@ -75,6 +89,8 @@ export function useSteinPagination() {
   });
   const [state, dispatch] = useReducer(reducer, {
     data: [],
+    size: [],
+    area: [],
     batch: 1,
     totalFetched: 0,
   });
@@ -82,6 +98,9 @@ export function useSteinPagination() {
     start: new Date(),
     end: new Date(),
   });
+  const [size, setSize] = useState(0);
+  const [city, setCity] = useState("");
+  const [province, setProvince] = useState("");
 
   useLayoutEffect(() => {
     setLocation(`/?page=${state.batch}`);
@@ -90,8 +109,15 @@ export function useSteinPagination() {
   useEffect(() => {
     async function fetchData() {
       if (A.isEmpty(state.data)) {
-        const listResponse = await store.read<ListResponse>(SteinSheet.LIST);
+        const [listResponse, areas, sizes] = await Promise.all([
+          store.read<ListResponse>(SteinSheet.LIST),
+          store.read<Area>(SteinSheet.AREA),
+          store.read<Size>(SteinSheet.SIZE),
+        ]);
         const list = listsParser(listResponse);
+        const area = areaParser(areas);
+        const size = sizeParser(sizes);
+
         const minDate = list.reduce(
           (acc, v) => (acc.getTime() > v.date.getTime() ? v.date : acc),
           new Date(),
@@ -107,7 +133,9 @@ export function useSteinPagination() {
           type: "set",
           payload: {
             data: list,
-            totalFetched: state.totalFetched + list.length,
+            area,
+            size,
+            totalFetched: state.totalFetched + listResponse.length,
           },
         });
       }
@@ -115,17 +143,21 @@ export function useSteinPagination() {
 
     fetchData();
   }, [state.data, state.totalFetched]);
-
   const filteredData = state.data.filter(
     (e) =>
-      e.date.getTime() > dateRange.start.getTime() &&
-      e.date.getTime() < dateRange.end.getTime(),
+      e.date.getTime() >= dateRange.start.getTime() &&
+      e.date.getTime() <= dateRange.end.getTime(),
   );
 
-  const sortedData = sortList(filteredData, sortCriteria).map((x, i) => ({
-    ...x,
-    no: i + 1,
-  }));
+  const sortedData = sortList(filteredData, sortCriteria)
+    .map((x, i) => ({ ...x, no: i + 1 }))
+    .filter((e) => {
+      return (
+        (size === 0 || size === e.size) &&
+        (city === "" || city === e.city?.toUpperCase()) &&
+        (province === "" || province === e.province?.toUpperCase())
+      );
+    });
 
   return [
     { ...state, data: sortedData },
@@ -134,5 +166,8 @@ export function useSteinPagination() {
     dispatchSortCriteria,
     dateRange,
     setDateRange,
+    setSize,
+    setCity,
+    setProvince,
   ] as const;
 }

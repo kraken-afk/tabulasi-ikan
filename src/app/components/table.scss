@@ -110,3 +110,15 @@
     gap: .6rem;
   }
 }
+
+.domicile-controller {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+
+  &__input {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+}
