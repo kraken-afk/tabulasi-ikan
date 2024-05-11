@@ -1,32 +1,23 @@
-import { A } from "@mobily/ts-belt";
-
-import { listsParser } from "@/utils/lists-parser";
-import { useEffect, useLayoutEffect, useReducer } from "react";
+import { useState, useEffect, useLayoutEffect, useReducer } from "react";
 import { match } from "ts-pattern";
 import { useLocation } from "wouter";
-import { useSearch } from "./use-search";
-
-import { SteinSheet, store } from "@/libs/stein/stein-store";
+import { A } from "@mobily/ts-belt";
+import { listsParser } from "@/utils/lists-parser";
+import { store, SteinSheet } from "@/libs/stein/stein-store";
+import { sort } from "fast-sort";
 
 import type { List } from "@/libs/zod/parser";
 import type { ListResponse } from "@/libs/zod/scheme";
-import { sort } from "fast-sort";
 
 type SteinPaginationAction =
   | { type: "next" | "previous" }
   | { type: "goto"; payload: { batch: number } }
-  | {
-      type: "set";
-      payload: { data: List[]; totalFetched: number };
-    };
+  | { type: "set"; payload: { data: List[]; totalFetched: number } };
 
 type SteinPaginationState = {
   data: List[];
   batch: number;
   totalFetched: number;
-};
-type SteinPageSearchParam = {
-  page: number;
 };
 
 type ShortingType = "asc" | "desc";
@@ -42,26 +33,21 @@ type ShortingAction = {
 
 function reducer(state: SteinPaginationState, action: SteinPaginationAction) {
   return match(action)
-    .with({ type: "next" }, () => {
-      return { ...state, batch: state.batch + 1 };
-    })
-    .with({ type: "previous" }, () => {
-      return { ...state, batch: state.batch - 1 };
-    })
-    .with({ type: "goto" }, (action) => {
-      return { ...state, batch: action.payload.batch };
-    })
-    .with({ type: "set" }, (action) => {
-      return { ...state, ...action.payload };
-    })
+    .with({ type: "next" }, () => ({ ...state, batch: state.batch + 1 }))
+    .with({ type: "previous" }, () => ({ ...state, batch: state.batch - 1 }))
+    .with({ type: "goto" }, (action) => ({
+      ...state,
+      batch: action.payload.batch,
+    }))
+    .with({ type: "set" }, (action) => ({ ...state, ...action.payload }))
     .exhaustive();
 }
 
 function sortReducer(state: ShortingState, action: ShortingAction) {
-  return match(action)
-    .with({ type: "price" }, () => ({ ...state, price: action.category }))
-    .with({ type: "size" }, () => ({ ...state, size: action.category }))
-    .exhaustive();
+  return {
+    ...state,
+    [action.type]: action.category,
+  };
 }
 
 function sortList(data: List[], sortCriteria: ShortingCategories): List[] {
@@ -83,42 +69,70 @@ function sortList(data: List[], sortCriteria: ShortingCategories): List[] {
 
 export function useSteinPagination() {
   const [_, setLocation] = useLocation();
-  const search = useSearch<SteinPageSearchParam>();
   const [sortCriteria, dispatchSortCriteria] = useReducer(sortReducer, {
     price: "asc",
     size: "asc",
   });
   const [state, dispatch] = useReducer(reducer, {
     data: [],
-    batch: search.page,
+    batch: 1,
     totalFetched: 0,
+  });
+  const [dateRange, setDateRange] = useState<{ start: Date; end: Date }>({
+    start: new Date(),
+    end: new Date(),
   });
 
   useLayoutEffect(() => {
     setLocation(`/?page=${state.batch}`);
-  }, [state, setLocation]);
+  }, [state.batch, setLocation]);
 
   useEffect(() => {
-    if (A.isEmpty(state.data)) {
-      store.read<ListResponse>(SteinSheet.LIST).then((list) =>
+    async function fetchData() {
+      if (A.isEmpty(state.data)) {
+        const listResponse = await store.read<ListResponse>(SteinSheet.LIST);
+        const list = listsParser(listResponse);
+        const minDate = list.reduce(
+          (acc, v) => (acc.getTime() > v.date.getTime() ? v.date : acc),
+          new Date(),
+        );
+        const maxDate = list.reduce(
+          (acc, v) => (acc.getTime() < v.date.getTime() ? v.date : acc),
+          minDate,
+        );
+
+        setDateRange({ start: minDate, end: maxDate });
+
         dispatch({
           type: "set",
           payload: {
-            data: listsParser(list),
+            data: list,
             totalFetched: state.totalFetched + list.length,
           },
-        }),
-      );
+        });
+      }
     }
-  }, [state.totalFetched, state.data]);
 
-  const sortedData = sortList(state.data, sortCriteria).map((x, i) => ({
+    fetchData();
+  }, [state.data, state.totalFetched]);
+
+  const filteredData = state.data.filter(
+    (e) =>
+      e.date.getTime() > dateRange.start.getTime() &&
+      e.date.getTime() < dateRange.end.getTime(),
+  );
+
+  const sortedData = sortList(filteredData, sortCriteria).map((x, i) => ({
     ...x,
     no: i + 1,
   }));
 
   return [
-    [{ ...state, data: sortedData }, dispatch],
-    [sortCriteria, dispatchSortCriteria],
+    { ...state, data: sortedData },
+    dispatch,
+    sortCriteria,
+    dispatchSortCriteria,
+    dateRange,
+    setDateRange,
   ] as const;
 }
