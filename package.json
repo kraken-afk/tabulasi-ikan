@@ -12,6 +12,7 @@
 		"prepare": "husky"
 	},
 	"dependencies": {
+		"@hookform/resolvers": "^3.3.4",
 		"@mobily/ts-belt": "^3.13.1",
 		"clsx": "^2.1.1",
 		"date-fns": "^3.6.0",
@@ -20,6 +21,7 @@
 		"normalize.css": "^8.0.1",
 		"react": "^18.2.0",
 		"react-dom": "^18.2.0",
+		"react-hook-form": "^7.51.4",
 		"stein-js-client": "^0.0.2",
 		"ts-pattern": "^5.1.1",
 		"wouter": "^3.1.3",

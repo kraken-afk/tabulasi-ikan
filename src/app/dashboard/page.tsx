@@ -9,34 +9,36 @@ import {
   FishSymbol,
   Triangle,
 } from "lucide-react";
-import type { MouseEventHandler } from "react";
+import { useContext, type MouseEventHandler } from "react";
 import { A } from "@mobily/ts-belt";
 import clsx from "clsx";
 
 import "@/app/dashboard/main.scss";
 import { toCapitilize } from "@/utils/to-capitalize";
 import { Link } from "wouter";
-import { NothingToSee } from "@/componenst/nothing-to-see";
-import { SearchBar } from "@/componenst/search-bar";
+import { NothingToSee } from "@/components/nothing-to-see";
+import { SearchBar } from "@/components/search-bar";
 import { formatCurrency } from "@/utils/format-currency";
 import { formatGram } from "@/utils/format-gram";
+import { SteinPaginationStore } from "@/providers/stein-pagination-provider";
 
 export const DISPLAY_COUNT = 10;
 export const INITIAL_AMOUNT_OF_DATA = 60;
 
 export function Dashboard() {
-  const [
-    { data, batch, size, area, loading },
+  const {
+    state: { data, batch, size, area },
     dispatch,
     sortCriteria,
     dispatchSortCriteria,
-    { start: startDate, end: endDate },
-    setDate,
+    dateRange: { start: startDate, end: endDate },
+    setDateRange: setDate,
     setSize,
     setCity,
     setProvince,
     setSearch,
-  ] = useSteinPagination();
+    // biome-ignore lint/style/noNonNullAssertion: <explanation>
+  } = useContext(SteinPaginationStore)!;
 
   const start = batch * DISPLAY_COUNT - DISPLAY_COUNT;
   const end = batch * DISPLAY_COUNT;
@@ -72,9 +74,7 @@ export function Dashboard() {
       },
     });
 
-  return loading ? (
-    <p>loading..</p>
-  ) : (
+  return (
     <>
       <div className="search-controller">
         <SearchBar

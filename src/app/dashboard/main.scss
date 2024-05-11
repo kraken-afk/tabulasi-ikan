@@ -5,7 +5,7 @@
 
 .table-container {
   width: 100%;
-  overflow: hidden;
+  // overflow: hidden;
 
   @media screen and (max-width: 545px) {
     overflow-x: auto;
@@ -39,6 +39,7 @@
     gap: .4rem;
     position: fixed;
     bottom: 0;
+    left: 0;
     width: 100%;
     justify-content: space-evenly;
     z-index: 10;
@@ -135,25 +136,18 @@
   align-items: center;
   gap: 1rem;
   fill: rgb(229 231 235);
-
-  @media screen and (max-width: 545px) {
-    flex-direction: column;
-
-    & input {
-      width: 100%;
-    }
-  }
+  flex-direction: column;
 
   &__input {
     display: flex;
     align-items: center;
     gap: .4rem;
+    width: 100%;
+    max-width: 640px;
 
-    @media screen and (max-width: 545px) {
-      width: 100%;
-    }
 
     & input {
+      width: 100%;
       font-size: 1rem;
       padding: 4px 8px;
       border-radius: 6px;
@@ -165,20 +159,14 @@
   display: flex;
   align-items: center;
   gap: 1rem;
-
-
-  @media screen and (max-width: 545px) {
-    flex-direction: column;
-  }
+  flex-direction: column;
 
   &__input {
     display: flex;
     align-items: center;
     gap: .3rem;
-
-    @media screen and (max-width: 545px) {
-      width: 100%;
-    }
+    width: 100%;
+    max-width: 640px;
 
 
     & select {
@@ -187,10 +175,7 @@
       width: 160px;
       padding: 4px 8px;
       border-radius: 6px;
-
-      @media screen and (max-width: 545px) {
-        width: 100%;
-      }
+      width: 100%;
     }
   }
 }

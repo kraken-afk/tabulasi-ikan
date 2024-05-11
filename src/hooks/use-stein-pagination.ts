@@ -166,8 +166,8 @@ export function useSteinPagination() {
     })
     .map((x, i) => ({ ...x, no: i + 1 }));
 
-  return [
-    { ...state, data: sortedData },
+  return {
+    state: { ...state, data: sortedData },
     dispatch,
     sortCriteria,
     dispatchSortCriteria,
@@ -177,5 +177,5 @@ export function useSteinPagination() {
     setCity,
     setProvince,
     setSearch,
-  ] as const;
+  };
 }
