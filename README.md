@@ -1,30 +1,29 @@
-# React + TypeScript + Vite
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Prerequisites
 
-Currently, two official plugins are available:
+* **Node.js and npm (or pnpm/bun):** Make sure you have Node.js and your preferred package manager (npm, pnpm, or bun) installed. You can download Node.js from the official website: [https://nodejs.org/](https://nodejs.org/)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
-
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-  },
-}
+## Install dependencies
+Install the dependencies using your preferred package manager.
+```sh
+bun install  # or 
+npm install  # or 
+pnpm install 
 ```
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+## Building the Project
+To build the project for production, run the following command:
+```sh
+bunx run build # or
+npx run build  # or 
+pnpm dlx run build  
+```
+
+## Running the Application
+After building, you can start the application in preview mode using:
+```sh
+bunx run preview # or
+npx run preview  # or 
+pnpm dlx run preview  
+```
+Open your browser and go to `http://localhost:5173`

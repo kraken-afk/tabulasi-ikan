@@ -1,5 +1,4 @@
 import { ButtonSequence } from "./buttons-sequence";
-import { useSteinPagination } from "@/hooks/use-stein-pagination";
 import { formatDate, intlFormat } from "date-fns";
 import {
   CalendarDays,
