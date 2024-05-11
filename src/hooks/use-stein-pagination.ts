@@ -9,6 +9,7 @@ import { sort } from "fast-sort";
 import type { List } from "@/utils/parser";
 import type { ListResponse, areaScheme, sizeScheme } from "@/libs/zod/scheme";
 import type { z } from "zod";
+import { DISPLAY_COUNT } from "@/app/dashboard/page";
 
 export type Area = z.infer<typeof areaScheme>;
 export type Size = z.infer<typeof sizeScheme>;
@@ -166,8 +167,19 @@ export function useSteinPagination() {
     })
     .map((x, i) => ({ ...x, no: i + 1 }));
 
+  const totalBatch =
+    (sortedData.length - (sortedData.length % DISPLAY_COUNT)) / DISPLAY_COUNT +
+    1;
+
+  if (totalBatch < state.batch) {
+    dispatch({ type: "goto", payload: { batch: 1 } });
+  }
+
   return {
-    state: { ...state, data: sortedData },
+    state: {
+      ...state,
+      data: sortedData,
+    },
     dispatch,
     sortCriteria,
     dispatchSortCriteria,
