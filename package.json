@@ -1,40 +1,40 @@
 {
-  "name": "efishery-assignment",
-  "private": true,
-  "version": "0.0.0",
-  "type": "module",
-  "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
-    "lint": "biome lint --apply ./src",
-    "format": "biome format --write .",
-    "preview": "vite preview",
-    "prepare": "husky"
-  },
-  "dependencies": {
-    "@hookform/resolvers": "^3.3.4",
-    "@mobily/ts-belt": "^3.13.1",
-    "clsx": "^2.1.1",
-    "date-fns": "^3.6.0",
-    "fast-sort": "^3.4.0",
-    "lucide-react": "^0.378.0",
-    "normalize.css": "^8.0.1",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-hook-form": "^7.51.4",
-    "stein-js-client": "^0.0.2",
-    "ts-pattern": "^5.1.1",
-    "wouter": "^3.1.3",
-    "zod": "^3.23.8"
-  },
-  "devDependencies": {
-    "@biomejs/biome": "^1.7.3",
-    "@types/react": "^18.2.66",
-    "@types/react-dom": "^18.2.22",
-    "@vitejs/plugin-react-swc": "^3.5.0",
-    "husky": "^9.0.11",
-    "sass": "^1.77.0",
-    "typescript": "^5.2.2",
-    "vite": "^5.2.0"
-  }
+	"name": "efishery-assignment",
+	"private": true,
+	"version": "0.0.0",
+	"type": "module",
+	"scripts": {
+		"dev": "vite",
+		"build": "tsc && vite build",
+		"lint": "biome lint --apply ./src",
+		"format": "biome format --write .",
+		"preview": "vite preview",
+		"prepare": "husky"
+	},
+	"dependencies": {
+		"@hookform/resolvers": "^3.3.4",
+		"@mobily/ts-belt": "^3.13.1",
+		"clsx": "^2.1.1",
+		"date-fns": "^3.6.0",
+		"fast-sort": "^3.4.0",
+		"lucide-react": "^0.378.0",
+		"normalize.css": "^8.0.1",
+		"react": "^18.2.0",
+		"react-dom": "^18.2.0",
+		"react-hook-form": "^7.51.4",
+		"stein-js-client": "^0.0.2",
+		"ts-pattern": "^5.1.1",
+		"wouter": "^3.1.3",
+		"zod": "^3.23.8"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^1.7.3",
+		"@types/react": "^18.2.66",
+		"@types/react-dom": "^18.2.22",
+		"@vitejs/plugin-react-swc": "^3.5.0",
+		"husky": "^9.0.11",
+		"sass": "^1.77.0",
+		"typescript": "^5.2.2",
+		"vite": "^5.2.0"
+	}
 }
