@@ -1,3 +1,9 @@
+## Explanation
+I made a Front-end app using React, Typescript, and SCSS, for managing fish price in Indonesia (dummy).
+
+## Features
+It have basic functionality for read and write, sorting, filtering and Searcing.
+
 ## Search Bar
 At the top of the page, you can find a search bar used for searching the data by commodity.
 
